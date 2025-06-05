@@ -68,9 +68,9 @@ headscale:
         global:
           - 1.1.1.1
           - 8.8.8.8
-    oidc:
-      issuer: "https://your-oidc-issuer.com"
-      client_id: "YOUR_OIDC_CLIENT_ID_FOR_HEADSCALE"
+    # oidc:
+    #   issuer: "https://your-oidc-issuer.com"
+    #   client_id: "YOUR_OIDC_CLIENT_ID_FOR_HEADSCALE"
 #      allowed_groups:
 #        - vpn_access
 #     allowed_domains:
@@ -81,8 +81,8 @@ headscale:
   secret:
     name: headscale-secret
     create: true
-    oidc:
-      client_secret: "REPLACE_IT_WITH_YOUR_OIDC_CLIENT_SECRET"
+    # oidc:
+    #   client_secret: "REPLACE_IT_WITH_YOUR_OIDC_CLIENT_SECRET"
 relay:
   enabled: true
   image: ghcr.io/tailscale/tailscale:v1.80.3
