@@ -9,20 +9,14 @@ This Helm chart deploys Headplane and Headscale in a Kubernetes cluster. Headpla
 - Kubernetes cluster
 - Helm installed (`helm version`)
 
-### Add Helm Repository
-```sh
-helm repo add nbcloud https://charts.nbcloud.io
-helm repo update
-```
-
 ### Install the Chart
 ```sh
-helm install headplane nbcloud/headplane
+helm install headplane oci://harbor.lag0.com.br/library/headplane
 ```
 
 ### Upgrade the Chart
 ```sh
-helm upgrade headplane nbcloud/headplane
+helm upgrade headplane oci://harbor.lag0.com.br/library/headplane
 ```
 
 ### Uninstall the Chart
