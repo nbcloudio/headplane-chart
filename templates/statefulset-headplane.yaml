@@ -33,7 +33,7 @@ spec:
         image: {{ .Values.headplane.image }}
         envFrom:
           - secretRef:
-              name: {{ .Values.headplane.secret.name }}
+            name: {{ .Values.headplane.secret.name }}
           - secretRef:
             name: headscale-api-token
         env:
