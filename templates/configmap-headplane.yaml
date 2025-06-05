@@ -12,7 +12,10 @@ data:
 {{- toYaml .Values.headplane.config.headscale | nindent 6 }}
     integration:
 {{- toYaml .Values.headplane.config.integration | nindent 6 }}
+# only add oidc if .Values.headplane.config.oidc is set
+{{- if .Values.headplane.config.oidc }}
     oidc:
 {{- toYaml .Values.headplane.config.oidc | nindent 6 }}
       client_secret: "secret"
       headscale_api_key: "secret"
+{{- end }}
