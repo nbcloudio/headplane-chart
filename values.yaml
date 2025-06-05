@@ -14,20 +14,20 @@ headplane:
             enabled: true
             validate_manifest: true
             pod_name: "headplane-0"
-    oidc:
-      issuer: "https://your-oidc-issuer-url.com"
-      disable_api_key_login: "true"
-      token_endpoint_auth_method: "client_secret_post"
-      redirect_uri: "https://your-headplane-admin-domain.com/admin/oidc/callback"
-      client_id: "REPLACE_IT_WITH_YOUR_OIDC_CLIENT_ID_FOR_HEADPLANE"
+    # oidc:
+    #   issuer: "https://your-oidc-issuer-url.com"
+    #   disable_api_key_login: "true"
+    #   token_endpoint_auth_method: "client_secret_post"
+    #   redirect_uri: "https://your-headplane-admin-domain.com/admin/oidc/callback"
+    #   client_id: "REPLACE_IT_WITH_YOUR_OIDC_CLIENT_ID_FOR_HEADPLANE"
   secret:
     name: headplane-secret
     create: true
     server:
       cookie_secret: "yjbqijkvfrgrtwwkoanqquykeyuyffywd"
-    oidc:
-      client_secret: "REPLACE_IT_WITH_YOUR_OIDC_CLIENT_SECRET_FOR_HEADPLANE"
-      headscale_api_key: "REPLACE_IT_WITH_YOUR_HEADSCALE_API_KEY"
+    # oidc:
+    #   client_secret: "REPLACE_IT_WITH_YOUR_OIDC_CLIENT_SECRET_FOR_HEADPLANE"
+    #   headscale_api_key: "REPLACE_IT_WITH_YOUR_HEADSCALE_API_KEY"
 headscale:
   image: headscale/headscale:0.25.1
   config:
