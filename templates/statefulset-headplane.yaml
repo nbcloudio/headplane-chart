@@ -24,7 +24,7 @@ spec:
           - -c
           - |
             cp /headscale-default-config/config.yaml /headscale-config/config.yaml
-            cp /headscale-acl/acl.hujson {{ .Values.headscale.config.policy.path }}
+            cp /headscale-acl/acl.hujson /headscale-config/acl.hujson
         volumeMounts:
           - name: headscale-config
             mountPath: /headscale-config
