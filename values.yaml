@@ -30,10 +30,14 @@ headplane:
     #   headscale_api_key: "REPLACE_IT_WITH_YOUR_HEADSCALE_API_KEY"
 headscale:
   image: headscale/headscale:0.25.1
+
+  # ACL configuration
+  # only applicable if headscale.config.policy.mode is 'file'
   acl: |
     {
       "acls": []
     }
+    
   config:
     server_url: https://vpn.example.com
     listen_addr: 0.0.0.0:8080
@@ -41,7 +45,7 @@ headscale:
     grpc_listen_addr: 0.0.0.0:50443
     grpc_allow_insecure: false
     policy:
-      mode: file
+      mode: database # 'file' or 'database'
       path: "/etc/headscale/acl.hujson"
     prefixes:
       v4: 100.64.0.0/10
