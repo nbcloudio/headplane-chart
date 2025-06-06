@@ -23,8 +23,8 @@ headplane:
   secret:
     name: headplane-secret
     create: true
-    server:
-      cookie_secret: "yjbqijkvfrgrtwwkoanqquykeyuyffywd"
+    # server:
+      # cookie_secret: "yjbqijkvfrgrtwwkoanqquykeyuyffywd" #if not set, it will be generated
     # oidc:
     #   client_secret: "REPLACE_IT_WITH_YOUR_OIDC_CLIENT_SECRET_FOR_HEADPLANE"
     #   headscale_api_key: "REPLACE_IT_WITH_YOUR_HEADSCALE_API_KEY"

@@ -7,7 +7,7 @@ data:
   config.yaml: |
     server:
 {{- toYaml .Values.headplane.config.server | nindent 6 }}
-      cookie_secret: "yjbqijkvfrgrtwwkoanqquykeyuyzywd"
+      cookie_secret: {{ include "headplane.cookieSecret" . | quote }}
     headscale:
 {{- toYaml .Values.headplane.config.headscale | nindent 6 }}
     integration:
