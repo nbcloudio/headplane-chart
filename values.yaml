@@ -1,5 +1,5 @@
 headplane:
-  image: ghcr.io/tale/headplane:0.5.5
+  image: ghcr.io/tale/headplane:0.6.0
   config:
     server:
         host: "0.0.0.0"
@@ -40,6 +40,9 @@ headscale:
     metrics_listen_addr: 0.0.0.0:9090
     grpc_listen_addr: 0.0.0.0:50443
     grpc_allow_insecure: false
+    policy:
+      mode: file
+      path: "/etc/headscale/acl.hujson"
     prefixes:
       v4: 100.64.0.0/10
       v6: fd7a:115c:a1e0::/48

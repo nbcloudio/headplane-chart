@@ -32,7 +32,7 @@ This chart supports customization through the `values.yaml` file.
 #### `headplane`
 | Key | Description | Default |
 |------|------------|---------|
-| `image` | Headplane container image | `ghcr.io/tale/headplane:0.5.5` |
+| `image` | Headplane container image | `ghcr.io/tale/headplane:0.6.0` |
 | `config.server.host` | Server host | `0.0.0.0` |
 | `config.server.port` | Server port | `3000` |
 | `config.server.cookie_secure` | Use secure cookies | `true` |
@@ -56,6 +56,32 @@ This chart supports customization through the `values.yaml` file.
 | `server.cookie_secret` | Cookie secret (if not provided, wil be generated and added to secret) | `` | 
 | `oidc.client_secret` | OIDC client secret (optional) | `` |
 | `oidc.headscale_api_key` | Headscale API key (optional) | `` |
+
+#### `headscale.acl`
+| Key | Description | Default |
+|------|------------|---------|
+| `acl` | Access Control List configuration in JSON format | `null` |
+
+Example ACL configuration:
+```yaml
+headscale:
+  acl: |
+    {
+      "acls": [
+        {
+          "action": "accept",
+          "src": ["user1@example.com", "user2@example.com"],
+          "dst": ["host1:80", "host1:443"]
+        }
+      ]
+    }
+  config:
+    policy:
+      mode: file
+      path: "/etc/headscale/acl.hujson"  # Path where the ACL file will be mounted
+```
+
+The ACL configuration will be mounted at the path specified in `headscale.config.policy.path` (default: `/etc/headscale/acl.hujson`).
 
 ## Using the Chart
 1. Modify `values.yaml` with your settings.
