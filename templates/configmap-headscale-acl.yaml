@@ -6,6 +6,6 @@ metadata:
   labels:
     app: headplane
 data:
-  acl.hujson: |
-    {{ .Values.headscale.acl | indent 4 }}
+  acl.hujson: |-
+    {{- .Values.headscale.acl | nindent 4 }}
 {{- end }} 
