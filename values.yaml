@@ -30,6 +30,10 @@ headplane:
     #   headscale_api_key: "REPLACE_IT_WITH_YOUR_HEADSCALE_API_KEY"
 headscale:
   image: headscale/headscale:0.25.1
+  acl: |
+    {
+      "acls": []
+    }
   config:
     server_url: https://vpn.example.com
     listen_addr: 0.0.0.0:8080

@@ -20,14 +20,18 @@ spec:
       - name: copy-headscale-config
         image: busybox:latest
         command:
-          - cp
-          - /headscale-default-config/config.yaml
-          - /headscale-config/config.yaml
+          - sh
+          - -c
+          - |
+            cp /headscale-default-config/config.yaml /headscale-config/config.yaml
+            cp /headscale-acl/acl.hujson /headscale-config/acl.hujson
         volumeMounts:
           - name: headscale-config
             mountPath: /headscale-config
           - name: headscale-default-config
             mountPath: /headscale-default-config
+          - name: headscale-acl
+            mountPath: /headscale-acl
       containers:
       - name: headplane
         image: {{ .Values.headplane.image }}
@@ -70,3 +74,6 @@ spec:
         - name: headplane-config
           configMap:
             name: headplane-config
+        - name: headscale-acl
+          configMap:
+            name: headscale-acl

@@ -1,7 +1,7 @@
 # Headplane Helm Chart
 
 ## Overview
-This Helm chart deploys Headplane and Headscale in a Kubernetes cluster. Headplane provides an interface to manage headscale instances, which is a Tailscale-compatible coordination server.
+This Helm chart deploys [Headplane](https://github.com/tale/headplane) and [Headscale](https://github.com/juanfont/headscale) in a Kubernetes cluster. Headplane provides an interface to manage headscale instances, which is a Tailscale-compatible coordination server.
 
 ## Installation
 
@@ -53,9 +53,9 @@ This chart supports customization through the `values.yaml` file.
 |------|------------|---------|
 | `name` | Secret name | `headplane-secret` |
 | `create` | Whether to create the secret | `true` |
-| `server.cookie_secret` | Cookie secret | `yjbqijkvfrgrtwwkoanqquykeyuyffywd` |
-| `oidc.client_secret` | OIDC client secret | `REPLACE_IT_WITH_YOUR_OIDC_CLIENT_SECRET_FOR_HEADPLANE` |
-| `oidc.headscale_api_key` | Headscale API key | `REPLACE_IT_WITH_YOUR_HEADSCALE_API_KEY` |
+| `server.cookie_secret` | Cookie secret (if not provided, wil be generated and added to secret) | `` | 
+| `oidc.client_secret` | OIDC client secret (optional) | `` |
+| `oidc.headscale_api_key` | Headscale API key (optional) | `` |
 
 ## Using the Chart
 1. Modify `values.yaml` with your settings.
@@ -65,7 +65,7 @@ This chart supports customization through the `values.yaml` file.
 For further customization, refer to the Kubernetes documentation on ConfigMaps and Secrets.
 
 ## License
-Copyright © 2025 nbcloud.io
+Copyright © 2025 antoniolago
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at:
 

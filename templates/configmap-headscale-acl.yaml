@@ -1,0 +1,11 @@
+{{- if .Values.headscale.acl }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: headscale-acl
+  labels:
+    {{- include "headplane-chart.labels" . | nindent 4 }}
+data:
+  acl.hujson: |
+    {{ .Values.headscale.acl | indent 4 }}
+{{- end }} 
