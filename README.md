@@ -4,19 +4,45 @@
 
 This helm chart deploys [Headplane](https://github.com/tale/headplane) + [Headscale](https://github.com/juanfont/headscale) and an embedded Tailscale relay in a kubernetes cluster.
 
-### OIDC Configuration
+## Installation
 
-To use OIDC, you must provide the OIDC client secrets via Kubernetes secret:
+### Prerequisites
+- Kubernetes cluster
+- Helm installed (`helm version`)
+- (Optional) OCI registry access for pulling images
 
-- Create a secret named `oidc-secrets` with keys `oidc_headplane_client_secret` and `oidc_headscale_client_secret`.
-
+### Add the Helm repository
 ```sh
-kubectl create secret generic oidc-secrets \
-  --from-literal=oidc_headplane_client_secret=your-headplane-oidc-client-secret \
-  --from-literal=oidc_headscale_client_secret=your-headscale-oidc-client-secret \
-  -n <namespace>
+helm repo add headplane https://harbor.lag0.com.br/library
+helm repo update
 ```
 
+### Install the Chart
+```sh
+# Install with default values
+helm install headplane oci://harbor.lag0.com.br/library/headplane
+
+# Install with custom values
+helm install headplane oci://harbor.lag0.com.br/library/headplane -f values.yaml
+
+# Install with specific values
+helm install headplane oci://harbor.lag0.com.br/library/headplane \
+  --set headplane.config.server.port=3000 \
+  --set ingress.enabled=true
+
+# Install in a specific namespace
+helm install headplane oci://harbor.lag0.com.br/library/headplane -n your-namespace
+```
+
+### Upgrade the Chart
+```sh
+helm upgrade headplane oci://harbor.lag0.com.br/library/headplane
+```
+
+### Uninstall the Chart
+```sh
+helm uninstall headplane
+```
 
 ## Values
 
@@ -33,13 +59,13 @@ kubectl create secret generic oidc-secrets \
 | headplane.config.oidc.enabled | bool | `false` |  |
 | headplane.config.oidc.issuer | string | `"https://your-oidc-issuer-url.com"` |  |
 | headplane.config.oidc.redirect_uri | string | `"https://your-headplane-admin-domain.com/admin/oidc/callback"` |  |
+| headplane.config.oidc.secret_name | string | `"oidc-secrets"` |  |
 | headplane.config.oidc.token_endpoint_auth_method | string | `"client_secret_post"` |  |
 | headplane.config.server.cookie_secure | bool | `true` |  |
 | headplane.config.server.host | string | `"0.0.0.0"` |  |
 | headplane.config.server.port | int | `3000` |  |
+| headplane.envFrom | list | `[]` |  |
 | headplane.image | string | `"ghcr.io/tale/headplane:0.6.0"` |  |
-| headplane.secret.create | bool | `true` |  |
-| headplane.secret.name | string | `"headplane-secret"` |  |
 | headscale.acl | string | `"{\n  \"acls\": []\n}\n"` |  |
 | headscale.config.database.debug | bool | `false` |  |
 | headscale.config.database.sqlite.path | string | `"/etc/headscale/db.sqlite"` |  |
@@ -67,22 +93,21 @@ kubectl create secret generic oidc-secrets \
 | headscale.config.oidc.client_id | string | `"YOUR_OIDC_CLIENT_ID_FOR_HEADSCALE"` |  |
 | headscale.config.oidc.enabled | bool | `false` |  |
 | headscale.config.oidc.issuer | string | `"https://your-oidc-issuer.com"` |  |
+| headscale.config.oidc.secret_name | string | `"oidc-secrets"` |  |
 | headscale.config.policy.mode | string | `"database"` |  |
 | headscale.config.policy.path | string | `"/etc/headscale/acl.hujson"` |  |
 | headscale.config.prefixes.allocation | string | `"sequential"` |  |
 | headscale.config.prefixes.v4 | string | `"100.64.0.0/10"` |  |
 | headscale.config.prefixes.v6 | string | `"fd7a:115c:a1e0::/48"` |  |
 | headscale.config.server_url | string | `"https://vpn.example.com"` |  |
+| headscale.envFrom | list | `[]` |  |
 | headscale.image | string | `"headscale/headscale:0.25.1"` |  |
-| headscale.secret.create | bool | `true` |  |
-| headscale.secret.name | string | `"headscale-secret"` |  |
 | ingress.className | string | `"nginx"` |  |
 | ingress.enabled | bool | `false` |  |
 | ingress.headplaneDomain | string | `"headplane.example.com"` |  |
 | ingress.headscaleDomain | string | `"vpn.example.com"` |  |
 | ingress.labels | list | `[]` |  |
 | ingress.tlsSecretName | string | `"headplane-tls"` |  |
-| namespace | string | `"headplane"` |  |
 | pvc.accessModes[0] | string | `"ReadWriteOnce"` |  |
 | pvc.enabled | bool | `true` |  |
 | pvc.name | string | `"headscale-config"` |  |
@@ -101,3 +126,64 @@ kubectl create secret generic oidc-secrets \
 | relay.pvc.name | string | `"tailscale-relay-data"` |  |
 | relay.pvc.storage | string | `"1Gi"` |  |
 
+### OIDC Configuration
+
+To use OIDC, you must provide the OIDC client secrets via a single Kubernetes secret:
+
+```sh
+kubectl create secret generic oidc-secrets \
+  --from-literal=HEADPLANE_OIDC__CLIENT_SECRET=your-headplane-oidc-client-secret \
+  --from-literal=HEADPLANE_OIDC__CLIENT_ID=your-headplane-oidc-client-id \
+  --from-literal=HEADPLANE_OIDC__HEADSCALE_API_KEY=your-headscale-api-key \
+  --from-literal=HEADSCALE_OIDC__CLIENT_SECRET=your-headscale-oidc-client-secret \
+  --from-literal=HEADSCALE_OIDC__CLIENT_ID=your-headscale-oidc-client-id \
+  -n <namespace>
+```
+
+Then enable OIDC in your `values.yaml`:
+```yaml
+headplane:
+  config:
+    oidc:
+      enabled: true
+      issuer: "https://your-oidc-issuer-url.com"
+      redirect_uri: "https://your-headplane-admin-domain.com/admin/oidc/callback"
+      secret_name: "oidc-secrets"  # Name of your OIDC secret
+
+headscale:
+  config:
+    oidc:
+      enabled: true
+      issuer: "https://your-oidc-issuer.com"
+      secret_name: "oidc-secrets"  # Same secret as Headplane
+```
+
+You can add any additional environment variables by creating more secrets or config-maps and adding them to the `envFrom` section. For example, to add custom configuration:
+
+```sh
+kubectl create secret generic headplane-custom-config \
+  --from-literal=CUSTOM_VAR=value \
+  --from-literal=ANOTHER_VAR=another-value \
+  -n <namespace>
+```
+
+Then add it to your values:
+```yaml
+headplane:
+  envFrom:
+    - secretRef:
+        name: headplane-custom-config
+```
+
+Note: Make sure to keep your secrets secure and never commit them to version control. Consider using a secrets management solution in production.
+
+## License
+Copyright © 2025 antoniolago
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at:
+
+```
+http://www.apache.org/licenses/LICENSE-2.0
+```
+
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License. 

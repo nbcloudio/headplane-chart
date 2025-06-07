@@ -1,6 +1,3 @@
-# The namespace to deploy the chart into
-namespace: headplane
-
 # Headplane UI and API configuration
 headplane:
   # The container image for Headplane
@@ -41,16 +38,12 @@ headplane:
       redirect_uri: "https://your-headplane-admin-domain.com/admin/oidc/callback"
       # OIDC client ID
       client_id: "REPLACE_IT_WITH_YOUR_OIDC_CLIENT_ID_FOR_HEADPLANE"
-  secret:
-    # The name of the Kubernetes secret for Headplane
-    name: headplane-secret
-    # Whether to create the secret automatically
-    create: true
-    # server:
-      # cookie_secret: "yjbqijkvfrgrtwwkoanqquykeyuyffywd" #if not set, it will be generated
-    # oidc:
-    #   client_secret: "REPLACE_IT_WITH_YOUR_OIDC_CLIENT_SECRET_FOR_HEADPLANE"
-    #   headscale_api_key: "REPLACE_IT_WITH_YOUR_HEADSCALE_API_KEY"
+      # Name of the secret containing OIDC credentials
+      secret_name: "oidc-secrets"
+  # Additional secrets to mount as environment variables
+  envFrom: []
+    # - secretRef:
+    #     name: headscale-api-token
 
 # Headscale server configuration
 headscale:
@@ -139,20 +132,16 @@ headscale:
       issuer: "https://your-oidc-issuer.com"
       # OIDC client ID
       client_id: "YOUR_OIDC_CLIENT_ID_FOR_HEADSCALE"
+      # Name of the secret containing OIDC credentials
+      secret_name: "oidc-secrets"
       # allowed_groups:
       #   - vpn_access
       # allowed_domains:
       #   - example.com
       # allowed_users:
       #   - alice@example.com
-
-  secret:
-    # The name of the Kubernetes secret for Headscale
-    name: headscale-secret
-    # Whether to create the secret automatically
-    create: true
-    # oidc:
-    #   client_secret: "REPLACE_IT_WITH_YOUR_OIDC_CLIENT_SECRET"
+  # Additional secrets to mount as environment variables
+  envFrom: []
 
 # Tailscale relay configuration
 relay:
