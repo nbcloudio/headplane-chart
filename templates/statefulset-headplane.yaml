@@ -23,13 +23,13 @@ spec:
           - sh
           - -c
           - |
-            cp /headscale-default-config/config.yaml /headscale-config/config.yaml
+            cp /headscale-config/config.yaml /headscale-config/config.yaml
             cp /headscale-acl/acl.hujson /headscale-config/acl.hujson
         volumeMounts:
+          - name: headscale-config-pvc
+            mountPath: /headscale-config
           - name: headscale-config
             mountPath: /headscale-config
-          - name: headscale-default-config
-            mountPath: /headscale-default-config
           - name: headscale-acl
             mountPath: /headscale-acl
       containers:
@@ -73,10 +73,10 @@ spec:
           {{- toYaml . | nindent 10 }}
           {{- end }}
       volumes:
-        - name: headscale-default-config
-          configMap:
-            name: headscale-default-config
         - name: headscale-config
+          configMap:
+            name: headscale-config
+        - name: headscale-config-pvc
           persistentVolumeClaim:
             claimName: headscale-config
         - name: headplane-config
