@@ -4,6 +4,20 @@
 
 This helm chart deploys [Headplane](https://github.com/tale/headplane) + [Headscale](https://github.com/juanfont/headscale) and an embedded Tailscale relay in a kubernetes cluster.
 
+### OIDC Configuration
+
+To use OIDC, you must provide the OIDC client secrets via Kubernetes secret:
+
+- Create a secret named `oidc-secrets` with keys `oidc_headplane_client_secret` and `oidc_headscale_client_secret`.
+
+```sh
+kubectl create secret generic oidc-secrets \
+  --from-literal=oidc_headplane_client_secret=your-headplane-oidc-client-secret \
+  --from-literal=oidc_headscale_client_secret=your-headscale-oidc-client-secret \
+  -n <namespace>
+```
+
+
 ## Values
 
 | Key | Type | Default | Description |
