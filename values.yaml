@@ -96,8 +96,13 @@ headscale:
     # oidc:
     #   client_secret: "REPLACE_IT_WITH_YOUR_OIDC_CLIENT_SECRET"
 relay:
-  enabled: true
+  enabled: false
   image: ghcr.io/tailscale/tailscale:v1.80.3
+  
+  # This is an insecure field, be sure to use an ephemeral auth key
+  # if not provided, will use TS_AUTHKEY from tailscale-auth secret
+  authKey: ""
+
   config:
     hostname: "example.com"
     exit_node: "example.com"
