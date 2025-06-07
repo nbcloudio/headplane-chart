@@ -1,3 +1,4 @@
+namespace: headplane
 headplane:
   image: ghcr.io/tale/headplane:0.6.0
   config:
@@ -37,7 +38,7 @@ headscale:
     {
       "acls": []
     }
-    
+
   config:
     server_url: https://vpn.example.com
     listen_addr: 0.0.0.0:8080
