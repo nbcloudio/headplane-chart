@@ -98,11 +98,7 @@ headscale:
 relay:
   enabled: false
   image: ghcr.io/tailscale/tailscale:v1.80.3
-
-  # This is an insecure field, be sure to NOT use a reusable auth key here
-  # if not provided, will use TS_AUTHKEY from tailscale-auth secret
   authKey: ""
-
   config:
     hostname: "example.com"
     exit_node: "example.com"
@@ -110,12 +106,12 @@ relay:
     advertise_exit_node: "true"
     firewall_debug: "false"
     routes: "10.0.0.0/8"
-pvc:
-  enabled: true
-  name: headscale-config
-  accessModes:
-    - ReadWriteOnce
-  storage: 1Gi
+  pvc:
+    enabled: false
+    name: tailscale-relay-data
+    accessModes:
+      - ReadWriteOnce
+    storage: 1Gi
 #  storageClassName: default
 
 ingress:
