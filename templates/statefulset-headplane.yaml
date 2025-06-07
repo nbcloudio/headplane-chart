@@ -23,11 +23,11 @@ spec:
           - sh
           - -c
           - |
-            cp /headscale-config/config.yaml /headscale-config/config.yaml
-            cp /headscale-acl/acl.hujson /headscale-config/acl.hujson
+            cp /headscale-config/config.yaml /headscale-data/config.yaml
+            cp /headscale-acl/acl.hujson /headscale-data/acl.hujson
         volumeMounts:
-          - name: headscale-config-pvc
-            mountPath: /headscale-config
+          - name: headscale-data
+            mountPath: /headscale-data
           - name: headscale-config
             mountPath: /headscale-config
           - name: headscale-acl
@@ -53,14 +53,14 @@ spec:
         volumeMounts:
         - name: headplane-config
           mountPath: /etc/headplane
-        - name: headscale-config
+        - name: headscale-data
           mountPath: /etc/headscale
       - name: headscale
         image: {{ .Values.headscale.image }}
         args:
           - serve
         volumeMounts:
-        - name: headscale-config
+        - name: headscale-data
           mountPath: /etc/headscale
         - name: headplane-config
           mountPath: /etc/headplane
@@ -76,7 +76,7 @@ spec:
         - name: headscale-config
           configMap:
             name: headscale-config
-        - name: headscale-config-pvc
+        - name: headscale-data
           persistentVolumeClaim:
             claimName: headscale-config
         - name: headplane-config
