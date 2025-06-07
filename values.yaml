@@ -98,8 +98,8 @@ headscale:
 relay:
   enabled: false
   image: ghcr.io/tailscale/tailscale:v1.80.3
-  
-  # This is an insecure field, be sure to use an ephemeral auth key
+
+  # This is an insecure field, be sure to NOT use a reusable auth key here
   # if not provided, will use TS_AUTHKEY from tailscale-auth secret
   authKey: ""
 
