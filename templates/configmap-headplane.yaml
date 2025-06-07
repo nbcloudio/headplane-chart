@@ -1,4 +1,5 @@
 ---
+{{- if .Values.headscale.oidc.enabled }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -12,7 +13,7 @@ data:
 {{- toYaml .Values.headplane.config.headscale | nindent 6 }}
     integration:
 {{- toYaml .Values.headplane.config.integration | nindent 6 }}
-# only add oidc if .Values.headplane.config.oidc is set
+# only add oidc if .Values.headplane.oidc is set
 {{- if .Values.headplane.oidc.enabled }}
     oidc:
       issuer: {{ .Values.headplane.oidc.issuer | quote }}
@@ -20,4 +21,5 @@ data:
       token_endpoint_auth_method: {{ .Values.headplane.oidc.token_endpoint_auth_method | quote }}
       redirect_uri: {{ .Values.headplane.oidc.redirect_uri | quote }}
       client_id: {{ .Values.headplane.oidc.client_id | quote }}
+{{- end }}
 {{- end }}

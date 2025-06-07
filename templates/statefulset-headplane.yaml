@@ -36,9 +36,9 @@ spec:
       - name: headplane
         image: {{ .Values.headplane.image }}
         envFrom:
-          {{- if .Values.headplane.config.oidc.enabled }}
+          {{- if .Values.headplane.oidc.enabled }}
           - secretRef:
-              name: {{ .Values.headplane.config.oidc.secret_name }}
+              name: {{ .Values.headplane.oidc.secret_name }}
           {{- end }}
           {{- with .Values.headplane.envFrom }}
           {{- toYaml . | nindent 10 }}
@@ -65,9 +65,9 @@ spec:
         - name: headplane-config
           mountPath: /etc/headplane
         envFrom:
-          {{- if .Values.headscale.config.oidc.enabled }}
+          {{- if .Values.headscale.oidc.enabled }}
           - secretRef:
-              name: {{ .Values.headscale.config.oidc.secret_name }}
+              name: {{ .Values.headscale.oidc.secret_name }}
           {{- end }}
           {{- with .Values.headscale.envFrom }}
           {{- toYaml . | nindent 10 }}
