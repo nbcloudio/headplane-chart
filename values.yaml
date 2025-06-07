@@ -98,11 +98,13 @@ headscale:
 relay:
   enabled: false
   image: ghcr.io/tailscale/tailscale:v1.80.3
-  authKey: ""
   config:
     hostname: "example.com"
     exit_node: "example.com"
     login_server: "https://vpn.example.com"
+    # This is an insecure field, be sure to NOT use a reusable auth key here
+    # if not provided, will use TS_AUTHKEY from tailscale-auth secret
+    authKey: ""
     advertise_exit_node: "true"
     firewall_debug: "false"
     routes: "10.0.0.0/8"

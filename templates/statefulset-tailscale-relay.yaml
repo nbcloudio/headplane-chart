@@ -53,9 +53,9 @@ spec:
           value: "tailscale-auth"
         - name: TS_USERSPACE
           value: "true"
-        {{- if .Values.relay.authKey }}
+        {{- if .Values.relay.config.authKey }}
         - name: TS_AUTHKEY
-          value: "{{ .Values.relay.authKey }}"
+          value: "{{ .Values.relay.config.authKey }}"
         {{- else }}
         - name: TS_AUTHKEY
           valueFrom:
