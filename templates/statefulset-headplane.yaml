@@ -74,14 +74,14 @@ spec:
           {{- end }}
       volumes:
         - name: headscale-config
-          configMap:
-            name: headscale-config
+          secret:
+            secretName: headscale-config
         - name: headscale-data
           persistentVolumeClaim:
             claimName: headscale-config
         - name: headplane-config
-          configMap:
-            name: headplane-config
+          secret:
+            secretName: headplane-config
         - name: headscale-acl
           configMap:
             name: headscale-acl
