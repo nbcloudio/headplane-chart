@@ -134,7 +134,6 @@ To use OIDC, you must provide the OIDC client secrets via a single Kubernetes se
 kubectl create secret generic oidc-secrets \
   --from-literal=HEADPLANE_OIDC__CLIENT_SECRET=your-headplane-oidc-client-secret \
   --from-literal=HEADPLANE_OIDC__CLIENT_ID=your-headplane-oidc-client-id \
-  --from-literal=HEADPLANE_OIDC__HEADSCALE_API_KEY=your-headscale-api-key \
   --from-literal=HEADSCALE_OIDC__CLIENT_SECRET=your-headscale-oidc-client-secret \
   --from-literal=HEADSCALE_OIDC__CLIENT_ID=your-headscale-oidc-client-id \
   -n <namespace>
