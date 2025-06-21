@@ -86,7 +86,7 @@ helm uninstall headplane
 | headscale.config.prefixes.v6 | string | `"fd7a:115c:a1e0::/48"` |  |
 | headscale.config.server_url | string | `"https://vpn.example.com"` |  |
 | headscale.envFrom | list | `[]` |  |
-| headscale.image | string | `"headscale/headscale:0.25.1"` |  |
+| headscale.image | string | `"headscale/headscale:0.26.1"` |  |
 | headscale.oidc.client_id | string | `"YOUR_OIDC_CLIENT_ID_FOR_HEADSCALE"` |  |
 | headscale.oidc.enabled | bool | `false` |  |
 | headscale.oidc.issuer | string | `"https://your-oidc-issuer.com"` |  |
