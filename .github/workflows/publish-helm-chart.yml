@@ -182,8 +182,12 @@ jobs:
             remaining=$((timeout_seconds - elapsed))
             
             if [ $elapsed -ge $timeout_seconds ]; then
-              echo "[$test_name] Timeout reached (${timeout_seconds}s). Proceeding to cleanup."
-              break
+              echo "[$test_name] Timeout reached (${timeout_seconds}s). Test FAILED!"
+              echo "[$test_name] Final status before timeout:"
+              kubectl get deployments,jobs,pods -n "$namespace" -o wide
+              echo "[$test_name] Recent events:"
+              kubectl get events -n "$namespace" --sort-by='.lastTimestamp' | tail -n 10
+              exit 1
             fi
             
             echo "[$test_name] === Current Status (${elapsed}s elapsed, ${remaining}s remaining) ==="
