@@ -179,13 +179,14 @@ jobs:
           while true; do
             current_time=$(date +%s)
             elapsed=$((current_time - start_time))
+            remaining=$((timeout_seconds - elapsed))
             
             if [ $elapsed -ge $timeout_seconds ]; then
-              echo "Timeout reached (${timeout_seconds}s). Proceeding to cleanup."
+              echo "[$test_name] Timeout reached (${timeout_seconds}s). Proceeding to cleanup."
               break
             fi
             
-            echo "=== Current Status (${elapsed}s elapsed) ==="
+            echo "[$test_name] === Current Status (${elapsed}s elapsed, ${remaining}s remaining) ==="
             kubectl get deployments,jobs,pods -n "$namespace" -o wide
             
             # Check if all deployments are ready
@@ -202,8 +203,8 @@ jobs:
               job_total_count=0
             fi
             
-            echo "Deployments: $deployment_ready_count/$deployment_total_count ready"
-            echo "Jobs: $job_completed_count/$job_total_count completed"
+            echo "[$test_name] Deployments: $deployment_ready_count/$deployment_total_count ready"
+            echo "[$test_name] Jobs: $job_completed_count/$job_total_count completed"
             
             # Check if all deployments are ready AND all jobs are completed
             deployments_ready=false
@@ -224,19 +225,19 @@ jobs:
             fi
             
             if [ "$deployments_ready" = true ] && [ "$jobs_completed" = true ]; then
-              echo "All deployments are ready and all jobs are completed!"
+              echo "[$test_name] All deployments are ready and all jobs are completed!"
               break
             fi
             
             # Check for any failed pods
             if kubectl get pods -n "$namespace" | grep -q "Error\|CrashLoopBackOff\|ImagePullBackOff\|Terminating"; then
-              echo "Found failed or terminating pods. Checking details..."
+              echo "[$test_name] Found failed or terminating pods. Checking details..."
               kubectl get pods -n "$namespace" | grep -E "Error|CrashLoopBackOff|ImagePullBackOff|Terminating"
-              echo -e "\nPod Events:"
+              echo -e "\n[$test_name] Pod Events:"
               kubectl get events -n "$namespace" --sort-by='.lastTimestamp' | grep -E "Error|Warning|Failed"
-              echo -e "\nPod Details:"
+              echo -e "\n[$test_name] Pod Details:"
               for pod in $(kubectl get pods -n "$namespace" -o jsonpath='{.items[*].metadata.name}'); do
-                echo -e "\n=== $pod ==="
+                echo -e "\n[$test_name] === $pod ==="
                 kubectl describe pod -n "$namespace" "$pod" | grep -A 10 "Events:"
               done
               exit 1
@@ -245,14 +246,14 @@ jobs:
             # Check for failed jobs
             failed_jobs=$(kubectl get jobs -n "$namespace" -o jsonpath='{.items[?(@.status.failed>0)].metadata.name}')
             if [ -n "$failed_jobs" ]; then
-              echo "Found failed jobs: $failed_jobs"
+              echo "[$test_name] Found failed jobs: $failed_jobs"
               for job in $failed_jobs; do
-                echo -e "\n=== Job $job details ==="
+                echo -e "\n[$test_name] === Job $job details ==="
                 kubectl describe job -n "$namespace" "$job"
-                echo -e "\n=== Job $job pod logs ==="
+                echo -e "\n[$test_name] === Job $job pod logs ==="
                 job_pods=$(kubectl get pods -n "$namespace" -l job-name="$job" -o jsonpath='{.items[*].metadata.name}')
                 for pod in $job_pods; do
-                  echo "--- Pod $pod logs ---"
+                  echo "[$test_name] --- Pod $pod logs ---"
                   kubectl logs -n "$namespace" "$pod" || echo "No logs available"
                 done
               done
