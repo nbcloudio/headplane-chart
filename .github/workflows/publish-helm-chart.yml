@@ -153,21 +153,108 @@ jobs:
           echo "=== Testing $test_name in namespace: $namespace ==="
           kubectl create namespace "$namespace"
           
-          # Apply resources
+          # Apply resources and monitor status
+          echo "Applying resources..."
           helm template rybbit . -f "$test_file" --namespace "$namespace" | kubectl apply -f - -n "$namespace"
           
-          # Wait for resources to be ready
-          echo "Waiting for resources to be ready..."
-          kubectl wait --for=condition=available --timeout=40s deployment --all -n "$namespace" 2>/dev/null || true
-          kubectl wait --for=condition=complete --timeout=40s job --all -n "$namespace" 2>/dev/null || true
+          # Immediate check of events and pod status
+          echo "=== Initial Status Check ==="
+          echo "Deployments:"
+          kubectl get deployments -n "$namespace" -o wide
           
-          # Quick status check
-          echo "Final status:"
-          kubectl get deployments,jobs,pods -n "$namespace" -o wide
+          echo -e "\nJobs:"
+          kubectl get jobs -n "$namespace" -o wide
           
-          # Cleanup
+          echo -e "\nPods:"
+          kubectl get pods -n "$namespace" -o wide
+          
+          echo -e "\nRecent Events:"
+          kubectl get events -n "$namespace" --sort-by='.lastTimestamp' | tail -n 20
+          
+          # Monitor deployments and jobs with continuous updates
+          echo -e "\nMonitoring deployments and jobs..."
+          while true; do
+            echo "=== Current Status ==="
+            kubectl get deployments,jobs,pods -n "$namespace" -o wide
+            
+            # Check if all deployments are ready
+            deployment_ready_count=$(kubectl get deployments -n "$namespace" -o jsonpath='{.items[*].status.readyReplicas}' | tr ' ' '\n' | grep -v "^$" | wc -l)
+            deployment_total_count=$(kubectl get deployments -n "$namespace" -o jsonpath='{.items[*].status.replicas}' | tr ' ' '\n' | grep -v "^$" | wc -l)
+            
+            # Check if all jobs are completed
+            job_completed_count=$(kubectl get jobs -n "$namespace" -o jsonpath='{.items[*].status.succeeded}' | tr ' ' '\n' | grep -v "^$" | wc -l)
+            job_total_count=$(kubectl get jobs -n "$namespace" -o jsonpath='{.items[*].spec.completions}' | tr ' ' '\n' | grep -v "^$" | wc -l)
+            
+            # If no jobs exist, set job counts to 0
+            if [ "$job_total_count" -eq 0 ]; then
+              job_completed_count=0
+              job_total_count=0
+            fi
+            
+            echo "Deployments: $deployment_ready_count/$deployment_total_count ready"
+            echo "Jobs: $job_completed_count/$job_total_count completed"
+            
+            # Check if all deployments are ready AND all jobs are completed
+            deployments_ready=false
+            jobs_completed=false
+            
+            # Check if deployments are ready (if any exist)
+            if [ "$deployment_total_count" -eq 0 ]; then
+              deployments_ready=true
+            elif [ "$deployment_ready_count" -eq "$deployment_total_count" ] && [ "$deployment_total_count" -gt 0 ]; then
+              deployments_ready=true
+            fi
+            
+            # Check if jobs are completed (if any exist)
+            if [ "$job_total_count" -eq 0 ]; then
+              jobs_completed=true
+            elif [ "$job_completed_count" -eq "$job_total_count" ] && [ "$job_total_count" -gt 0 ]; then
+              jobs_completed=true
+            fi
+            
+            if [ "$deployments_ready" = true ] && [ "$jobs_completed" = true ]; then
+              echo "All deployments are ready and all jobs are completed!"
+              break
+            fi
+            
+            # Check for any failed pods
+            if kubectl get pods -n "$namespace" | grep -q "Error\|CrashLoopBackOff\|ImagePullBackOff\|Terminating"; then
+              echo "Found failed or terminating pods. Checking details..."
+              kubectl get pods -n "$namespace" | grep -E "Error|CrashLoopBackOff|ImagePullBackOff|Terminating"
+              echo -e "\nPod Events:"
+              kubectl get events -n "$namespace" --sort-by='.lastTimestamp' | grep -E "Error|Warning|Failed"
+              echo -e "\nPod Details:"
+              for pod in $(kubectl get pods -n "$namespace" -o jsonpath='{.items[*].metadata.name}'); do
+                echo -e "\n=== $pod ==="
+                kubectl describe pod -n "$namespace" "$pod" | grep -A 10 "Events:"
+              done
+              exit 1
+            fi
+            
+            # Check for failed jobs
+            failed_jobs=$(kubectl get jobs -n "$namespace" -o jsonpath='{.items[?(@.status.failed>0)].metadata.name}')
+            if [ -n "$failed_jobs" ]; then
+              echo "Found failed jobs: $failed_jobs"
+              for job in $failed_jobs; do
+                echo -e "\n=== Job $job details ==="
+                kubectl describe job -n "$namespace" "$job"
+                echo -e "\n=== Job $job pod logs ==="
+                job_pods=$(kubectl get pods -n "$namespace" -l job-name="$job" -o jsonpath='{.items[*].metadata.name}')
+                for pod in $job_pods; do
+                  echo "--- Pod $pod logs ---"
+                  kubectl logs -n "$namespace" "$pod" || echo "No logs available"
+                done
+              done
+              exit 1
+            fi
+            
+            sleep 5
+          done
+          
+          # Cleanup with force delete
+          echo "=== Cleaning up ==="
           kubectl delete namespace "$namespace" --force --grace-period=0
-          echo "✓ Test completed for $test_name"
+          echo "✓ Cleanup completed for $test_name"
         done
 
   publish:
