@@ -2,11 +2,8 @@ name: Helm Chart CI/CD
 
 on:
   push:
-    branches:
-    - main
-    - staging
     tags:
-    - 'v*'
+      - 'v*'
   workflow_dispatch:
 
 env:
