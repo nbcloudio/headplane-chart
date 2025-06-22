@@ -1,0 +1,23 @@
+headplane:
+  config:
+    headscale:
+      url: "https://vpn.test.example.com"
+  secret:
+    server:
+      cookie_secret: "test-cookie-secret-12345"
+  oidc:
+    client_id: "test-headplane-client-id"
+    enabled: true
+    issuer: "https://auth.test.example.com"
+    redirect_uri: "https://headplane.test.example.com/admin/oidc/callback"
+headscale:
+  config:
+    server_url: "https://vpn.test.example.com"
+    dns:
+      base_domain: "test.vpn"
+  oidc:
+    client_id: "test-headscale-client-id"
+    enabled: true
+    issuer: "https://auth.test.example.com"
+pvc:
+  storageClassName: "test-class-sc"
